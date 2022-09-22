@@ -1,0 +1,2 @@
+Domain -> Não possui detalhes técnicos, não possui mecanismos de persistência.
+Infra -> Classe com implementação técnica, como fazer o acesso aos dados do BD, não tem a ver com o negocio da aplicação. ex.: configurar conexão servido email
