@@ -1,2 +1,11 @@
 Domain -> Não possui detalhes técnicos, não possui mecanismos de persistência.
 Infra -> Classe com implementação técnica, como fazer o acesso aos dados do BD, não tem a ver com o negocio da aplicação. ex.: configurar conexão servido email
+
+• Não se cria um repositorio por tabela, é criado um repository por agregado
+
+************** DIFERENÇA DOMAIN E INFRA **********************
+
+Sobre a diferença entre os pacotes, pense no domínio como classes que estão preocupadas em tratar coisas que fazem sentido pela perspectiva de negócio, ou seja, coisas que são importantes quando estamos falando de decisões que de alguma forma fogem do campo de conhecimento exclusivamente técnico, ou seja, mesmo que tecnicamente você possa resolver um problema, nesse pacote estarão classes que podem ter uma influência externa por exemplo do diretor de uma empresa, que pode em dado momento apontar que algo não deve mais ser feito de um jeito, mas de outro. Isso é negócio, nesse pacote estão classes que fazem sentido para o negócio funcionar.
+
+No pacote de infraestrutura você colocará coisas que predominantemente, para não dizer 100%, serão técnicas, e que inclusive em algumas vezes não estaremos interessados em saber exatamente nos mínimos detalhes de como funciona, nós utilizaremos o código mas ele não precisa estar exposto em detalhes para as demais camadas.
+Nesse sentido foi que o Thiago colocou no pacote de infraestrutura a forma como o repositório deve ser implementado, que nesse caso vai ser com o EntityManager, mas imagine que no futuro não será mais assim, terá um outro tipo de implementação. A camada de domínio não está interessada em saber qual é o outro tipo de solução, para ela, o que interessa é que o repositório faça o trabalho dele que nesse caso é o persistir os dados, mas como isso será feito, essa responsabilidade diz respeito à infraestrutura, não ao negócio.
