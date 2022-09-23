@@ -44,10 +44,7 @@ public class TestesRestauranteMain {
 			System.out.println(restaurante.getNome());
 		}
 		
-		restaurantes.remover(restaurante1);
-		
-		
-		
+		restaurantes.remover(restaurante1);		
 		
 	}
 
