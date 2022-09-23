@@ -38,7 +38,7 @@ public class TestesRestauranteMain {
 		var testeBusca = restaurantes.porId(1L);
 		System.out.println(testeBusca.getNome());
 		
-		List<Restaurante> todosRestaurantes = restaurantes.todas(); 
+		List<Restaurante> todosRestaurantes = restaurantes.listar(); 
 		
 		for(Restaurante restaurante : todosRestaurantes) {
 			System.out.println(restaurante.getNome());

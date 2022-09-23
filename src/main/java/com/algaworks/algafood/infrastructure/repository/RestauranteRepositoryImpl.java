@@ -12,13 +12,13 @@ import com.algaworks.algafood.domain.model.Restaurante;
 import com.algaworks.algafood.domain.repository.RestauranteRepository;
 
 @Component
-public class RestauranteRepositoryImp implements RestauranteRepository {
+public class RestauranteRepositoryImpl implements RestauranteRepository {
 	
 	@PersistenceContext
 	private EntityManager manager;
 
 	@Override
-	public List<Restaurante> todas() {
+	public List<Restaurante> listar() {
 		return manager.createQuery("from Restaurante", Restaurante.class).getResultList();
 	}
 

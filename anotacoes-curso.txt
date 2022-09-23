@@ -1,6 +1,9 @@
 Domain -> Não possui detalhes técnicos, não possui mecanismos de persistência.
 Infra -> Classe com implementação técnica, como fazer o acesso aos dados do BD, não tem a ver com o negocio da aplicação. ex.: configurar conexão servido email
 
+Agrgregate root https://martinfowler.com/bliki/DDD_Aggregate.html
+
+
 • Não se cria um repositorio por tabela, é criado um repository por agregado
 
 ************** DIFERENÇA DOMAIN E INFRA **********************
@@ -13,3 +16,6 @@ Nesse sentido foi que o Thiago colocou no pacote de infraestrutura a forma como 
 Controle Transacional
 
 https://medium.com/dev-cave/controle-transacional-34b9de948b8d
+
+@PersistenceContext
+https://www.devmedia.com.br/entendendo-o-java-persistencecontext-extended-e-transient/30493

@@ -12,13 +12,13 @@ import com.algaworks.algafood.domain.model.Cozinha;
 import com.algaworks.algafood.domain.repository.CozinhaRepository;
 
 @Component
-public class CozinhaRepositoryImp implements CozinhaRepository {
+public class CozinhaRepositoryImpl implements CozinhaRepository {
 
 	@PersistenceContext
 	private EntityManager manager;
 	
 	@Override
-	public List<Cozinha> todas() {
+	public List<Cozinha> listar() {
 		return  manager.createQuery("from Cozinha", Cozinha.class ).getResultList();				
 	}
 	
@@ -29,7 +29,7 @@ public class CozinhaRepositoryImp implements CozinhaRepository {
 	
 	@Override
 	@Transactional
-	public Cozinha adicionar(Cozinha cozinha) {
+	public Cozinha salvar(Cozinha cozinha) {
 		return manager.merge(cozinha);
 	}
 	
