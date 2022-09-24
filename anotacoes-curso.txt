@@ -19,3 +19,5 @@ https://medium.com/dev-cave/controle-transacional-34b9de948b8d
 
 @PersistenceContext
 https://www.devmedia.com.br/entendendo-o-java-persistencecontext-extended-e-transient/30493
+
+Controller: recebe requisição -> trata requisição -> retorna resposta
