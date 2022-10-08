@@ -35,7 +35,7 @@ public class TestesRestauranteMain {
 		restaurante1.setNome("Vasco");
 		restaurantes.adicionar(restaurante1);
 		
-		var testeBusca = restaurantes.porId(1L);
+		var testeBusca = restaurantes.buscar(1L);
 		System.out.println(testeBusca.getNome());
 		
 		List<Restaurante> todosRestaurantes = restaurantes.listar(); 
