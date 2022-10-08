@@ -29,11 +29,11 @@ public class TestesRestauranteMain {
 		restaurante2.setNome("Habibs");
 		restaurante2.setTaxaFrete(new BigDecimal(20));
 		
-		restaurante1 = restaurantes.adicionar(restaurante1);
-		restaurantes.adicionar(restaurante2);
+		restaurante1 = restaurantes.salvar(restaurante1);
+		restaurantes.salvar(restaurante2);
 		
 		restaurante1.setNome("Vasco");
-		restaurantes.adicionar(restaurante1);
+		restaurantes.salvar(restaurante1);
 		
 		var testeBusca = restaurantes.buscar(1L);
 		System.out.println(testeBusca.getNome());
