@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +24,7 @@ public class EstadoRepositoryImpl implements EstadoRepository {
 	}
 
 	@Override
-	public Estado porId(Long id) {
+	public Estado buscar(Long id) {
 		return manager.find(Estado.class, id);
 	}
 
@@ -35,8 +36,14 @@ public class EstadoRepositoryImpl implements EstadoRepository {
 
 	@Override
 	@Transactional
-	public void remover(Estado estado) {
-		estado = porId(estado.getId());		
+	public void remover(Long estadoId) {
+		Estado estado = buscar(estadoId);	
+		
+        if (estado == null) {
+            throw new EmptyResultDataAccessException(1);
+        }
+        
+		manager.remove(estado);
 	}
 	
 	
