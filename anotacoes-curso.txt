@@ -21,3 +21,41 @@ https://medium.com/dev-cave/controle-transacional-34b9de948b8d
 https://www.devmedia.com.br/entendendo-o-java-persistencecontext-extended-e-transient/30493
 
 Controller: recebe requisição -> trata requisição -> retorna resposta
+
+Lançando Exceções com @ResponseStatus
+
+Controller
+
+@DeleteMapping("/{cozinhaId}")
+@ResponseStatus(HttpStatus.NO_CONTENT)
+public void remover(@PathVariable Long cozinhaId) {
+	cadastroCozinha.excluir(cozinhaId);		
+}
+
+Service (Lança a execeção)
+
+public void excluir(Long cozinhaId) {
+	try {
+		cozinhaRepository.deleteById(cozinhaId);			
+	} catch (EmptyResultDataAccessException e) {
+		throw new EntidadeNaoEncontradaException(
+				String.format("Não existe um cadastro de cozinha com código %d", cozinhaId));
+	} catch (DataIntegrityViolationException e) {
+		throw new EntidadeEmUsoException(
+				String.format("Cozinha de código %d não pode ser removida, pois está em uso", cozinhaId));
+	}
+}
+
+Adicionar o status conflict
+
+@ResponseStatus(HttpStatus.CONFLICT)
+public class EntidadeEmUsoException extends RuntimeException {
+
+	private static final long serialVersionUID = 1L;
+	
+	public EntidadeEmUsoException(String mensagem) {
+		super(mensagem);
+	}
+
+}
+	
