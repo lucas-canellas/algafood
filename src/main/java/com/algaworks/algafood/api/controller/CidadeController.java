@@ -26,6 +26,7 @@ import com.algaworks.algafood.domain.service.CadastroCidadeService;
 @RequestMapping(value = "/cidades")
 public class CidadeController {
 	
+	
 	@Autowired
 	private CidadeRepository cidadeRepository;
 	
