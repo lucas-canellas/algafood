@@ -69,7 +69,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		List<Problem.Field> problemFields = bindingResult.getFieldErrors().stream()
 				.map(fieldError -> Problem.Field.builder()
 						.name(fieldError.getField())
-						.userName(fieldError.getDefaultMessage()).build())
+						.userMessage(fieldError.getDefaultMessage()).build())
 				.collect(Collectors.toList());
 		
 		Problem problem = createProblemBuilder(status, problemType, detail)
