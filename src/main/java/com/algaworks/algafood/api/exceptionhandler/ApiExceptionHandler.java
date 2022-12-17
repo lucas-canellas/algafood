@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -63,32 +65,37 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 	
 	@Override
-	protected ResponseEntity<Object> handleMethodArgumentNotValid(
-			MethodArgumentNotValidException ex, HttpHeaders headers,
-	        HttpStatus status, WebRequest request) {
-		
-		ProblemType problemType = ProblemType.PARAMETRO_INVALIDO;
-		String detail = "Um ou mais campos estão inválidos. Faça o preenchimento correto e tente novamente.";
-		
-		BindingResult bindingResult = ex.getBindingResult();
-		
-		List<Problem.Field> problemFields = bindingResult.getFieldErrors().stream()
-				.map(fieldError -> {
-					String message = messageSource.getMessage(fieldError, LocaleContextHolder.getLocale());
-					
-					return Problem.Field.builder()
-							.name(fieldError.getField())
-							.userMessage(message).build();
-				})
-				.collect(Collectors.toList());
-		
-		Problem problem = createProblemBuilder(status, problemType, detail)
-				.userMessage(detail)
-				.fields(problemFields)
-				.build();
-		
-		return handleExceptionInternal(ex, problem, headers, status, request);
-		
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+
+	    ProblemType problemType = ProblemType.DADOS_INVALIDOS;
+	    String detail = "Um ou mais campos estão inválidos. Faça o preenchimento correto e tente novamente.";
+	    
+	    BindingResult bindingResult = ex.getBindingResult();
+	    
+	    List<Problem.Object> problemObjects = bindingResult.getAllErrors().stream()
+	    		.map(objectError -> {
+	    			String message = messageSource.getMessage(objectError, LocaleContextHolder.getLocale());
+	    			
+	    			String name = objectError.getObjectName();
+	    			
+	    			if (objectError instanceof FieldError) {
+	    				name = ((FieldError) objectError).getField();
+	    			}
+	    			
+	    			return Problem.Object.builder()
+	    				.name(name)
+	    				.userMessage(message)
+	    				.build();
+	    		})
+	    		.collect(Collectors.toList());
+	    
+	    Problem problem = createProblemBuilder(status, problemType, detail)
+	        .userMessage(detail)
+	        .objects(problemObjects)
+	        .build();
+	    
+	    return handleExceptionInternal(ex, problem, headers, status, request);
 	}
 
 	private ResponseEntity<Object> handleMethodArgumentTypeMismatch(
@@ -101,7 +108,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	            + "que é de um tipo inválido. Corrija e informe um valor compatível com o tipo %s.",
 	            ex.getName(), ex.getValue(), ex.getRequiredType().getSimpleName());
 
-	    Problem problem = createProblemBuilder(status, problemType, detail).userMessage(detail).build();
+	    Object problem = createProblemBuilder(status, problemType, detail).userMessage(detail).build();
 
 	    return handleExceptionInternal(ex, problem, headers, status, request);
 	}
@@ -117,7 +124,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	    String detail = String.format("A propriedade '%s' não existe. "
 	            + "Corrija ou remova essa propriedade e tente novamente.", path);
 
-	    Problem problem = createProblemBuilder(status, problemType, detail)
+	    Object problem = createProblemBuilder(status, problemType, detail)
 	    		.userMessage(MSG_ERRO_GENERICA_USER_FINAL)
 	    		.build();
 	    
@@ -140,7 +147,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		ProblemType problemType = ProblemType.MENSAGEM_INCOMPREENSIVEL;
 		String detail = "O corpo da requisição esta inválido. Verifique o erro de sintaxe";
 		
-		Problem problem = createProblemBuilder(status, problemType, detail).userMessage(detail).build();
+		Object problem = createProblemBuilder(status, problemType, detail).userMessage(detail).build();
 		
 		return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
 	}
@@ -155,7 +162,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	            + "que é de um tipo inválido. Corrija e informe um valor compatível com o tipo %s.",
 	            path, ex.getValue(), ex.getTargetType().getSimpleName());
 	    
-	    Problem problem = createProblemBuilder(status, problemType, detail)
+	    Object problem = createProblemBuilder(status, problemType, detail)
 	    		.userMessage(MSG_ERRO_GENERICA_USER_FINAL)
 	    		.build();
 		
@@ -170,7 +177,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		ProblemType problemType = ProblemType.RECURSO_NAO_ENCONTRADO;
 		String detail = ex.getMessage();
 		
-		Problem problem = createProblemBuilder(status, problemType, detail).userMessage(detail).build();
+		Object problem = createProblemBuilder(status, problemType, detail).userMessage(detail).build();
 		
 		return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
 	}
@@ -183,7 +190,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	    String detail = String.format("O recurso %s, que você tentou acessar, é inexistente.", 
 	            ex.getRequestURL());
 	    
-	    Problem problem = createProblemBuilder(status, problemType, detail).userMessage(detail).build();
+	    Object problem = createProblemBuilder(status, problemType, detail).userMessage(detail).build();
 	    
 	    return handleExceptionInternal(ex, problem, headers, status, request);
 	}     
@@ -195,7 +202,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		ProblemType problemType = ProblemType.ENTIDADE_EM_USO;
 		String detail = ex.getMessage();
 		
-		Problem problem = createProblemBuilder(status, problemType, detail).userMessage(detail).build();
+		Object problem = createProblemBuilder(status, problemType, detail).userMessage(detail).build();
 		
 		return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
 	}
@@ -212,7 +219,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	    // para você durante, especialmente na fase de desenvolvimento
 	    ex.printStackTrace();
 	    
-	    Problem problem = createProblemBuilder(status, problemType, detail).userMessage(detail).build();
+	    Object problem = createProblemBuilder(status, problemType, detail).userMessage(detail).build();
 
 	    return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
 	}  
@@ -224,7 +231,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		ProblemType problemType = ProblemType.ERRO_NEGOCIO;
 		String detail = ex.getMessage();		
 		
-		Problem problem = createProblemBuilder(status, problemType, detail).userMessage(detail).build();
+		Object problem = createProblemBuilder(status, problemType, detail).userMessage(detail).build();
 		
 		return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
 	}
