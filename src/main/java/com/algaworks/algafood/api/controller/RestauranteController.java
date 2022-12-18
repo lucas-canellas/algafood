@@ -16,7 +16,6 @@ import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.SmartValidator;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.algaworks.algafood.core.validation.Groups;
 import com.algaworks.algafood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.exception.ValidacaoException;
