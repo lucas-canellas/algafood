@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -67,9 +66,11 @@ public class RestauranteController {
 
 	@PutMapping(value = "/{idRestaurante}")
 	public RestauranteModel atualizar(@PathVariable Long idRestaurante, @RequestBody @Valid RestauranteInput restauranteInput) {
+		
 		Restaurante restauranteAtual = cadastroRestaurante.buscarOuFalhar(idRestaurante);
-		Restaurante restaurante = disassembler.toDomainObject(restauranteInput);
-		BeanUtils.copyProperties(restaurante, restauranteAtual, "id", "formasPagamento", "endereco", "dataCadastro", "produtos");
+		
+		disassembler.copyToDomainObject(restauranteInput, restauranteAtual);
+
 		
 		try {
 			return assembler.toModel(cadastroRestaurante.salvar(restauranteAtual));
