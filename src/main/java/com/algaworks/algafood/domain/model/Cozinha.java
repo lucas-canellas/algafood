@@ -1,6 +1,5 @@
 package com.algaworks.algafood.domain.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -13,7 +12,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import com.algaworks.algafood.core.validation.Groups;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 import lombok.Data;
@@ -35,8 +33,8 @@ public class Cozinha {
 	@Column(nullable = false)
 	private String nome;	
 	
-	@JsonIgnore
+
 	@OneToMany(mappedBy = "cozinha")
-	private List<Restaurante> restaurantes = new ArrayList<>();
+	private List<Restaurante> restaurantes;
 	
 }
