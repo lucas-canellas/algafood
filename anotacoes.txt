@@ -1,0 +1,83 @@
+Domain -> Não possui detalhes técnicos, não possui mecanismos de persistência.
+Infra -> Classe com implementação técnica, como fazer o acesso aos dados do BD, não tem a ver com o negocio da aplicação. ex.: configurar conexão servido email
+
+Agrgregate root https://martinfowler.com/bliki/DDD_Aggregate.html
+
+
+• Não se cria um repositorio por tabela, é criado um repository por agregado
+
+************** DIFERENÇA DOMAIN E INFRA **********************
+
+Sobre a diferença entre os pacotes, pense no domínio como classes que estão preocupadas em tratar coisas que fazem sentido pela perspectiva de negócio, ou seja, coisas que são importantes quando estamos falando de decisões que de alguma forma fogem do campo de conhecimento exclusivamente técnico, ou seja, mesmo que tecnicamente você possa resolver um problema, nesse pacote estarão classes que podem ter uma influência externa por exemplo do diretor de uma empresa, que pode em dado momento apontar que algo não deve mais ser feito de um jeito, mas de outro. Isso é negócio, nesse pacote estão classes que fazem sentido para o negócio funcionar.
+
+No pacote de infraestrutura você colocará coisas que predominantemente, para não dizer 100%, serão técnicas, e que inclusive em algumas vezes não estaremos interessados em saber exatamente nos mínimos detalhes de como funciona, nós utilizaremos o código mas ele não precisa estar exposto em detalhes para as demais camadas.
+Nesse sentido foi que o Thiago colocou no pacote de infraestrutura a forma como o repositório deve ser implementado, que nesse caso vai ser com o EntityManager, mas imagine que no futuro não será mais assim, terá um outro tipo de implementação. A camada de domínio não está interessada em saber qual é o outro tipo de solução, para ela, o que interessa é que o repositório faça o trabalho dele que nesse caso é o persistir os dados, mas como isso será feito, essa responsabilidade diz respeito à infraestrutura, não ao negócio.
+
+Controle Transacional
+
+https://medium.com/dev-cave/controle-transacional-34b9de948b8d
+
+@PersistenceContext
+https://www.devmedia.com.br/entendendo-o-java-persistencecontext-extended-e-transient/30493
+
+Controller: recebe requisição -> trata requisição -> retorna resposta
+
+Lançando Exceções com @ResponseStatus
+
+Controller
+
+@DeleteMapping("/{cozinhaId}")
+@ResponseStatus(HttpStatus.NO_CONTENT)
+public void remover(@PathVariable Long cozinhaId) {
+	cadastroCozinha.excluir(cozinhaId);		
+}
+
+Service (Lança a execeção)
+
+public void excluir(Long cozinhaId) {
+	try {
+		cozinhaRepository.deleteById(cozinhaId);			
+	} catch (EmptyResultDataAccessException e) {
+		throw new EntidadeNaoEncontradaException(
+				String.format("Não existe um cadastro de cozinha com código %d", cozinhaId));
+	} catch (DataIntegrityViolationException e) {
+		throw new EntidadeEmUsoException(
+				String.format("Cozinha de código %d não pode ser removida, pois está em uso", cozinhaId));
+	}
+}
+
+Adicionar o status conflict
+
+@ResponseStatus(HttpStatus.CONFLICT)
+public class EntidadeEmUsoException extends RuntimeException {
+
+	private static final long serialVersionUID = 1L;
+	
+	public EntidadeEmUsoException(String mensagem) {
+		super(mensagem);
+	}
+
+}
+
+https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#section-builtin-constraints
+
+https://app.algaworks.com/forum/topicos/87622/se-o-metodo-ativar-inativar-nao-precisa-de-save-porque-os-outros-precisam
+
+Thiago disse que não é preciso fazer um save, o próprio JPA vai sincronizar com o BD (Fazer um update na tabela) nos métodos ativar e inativar, qual a diferença desse método para os outros como por exemplo salvar ou atualizar que fazem com que esses precisem do .save?
+
+Olá IGOR FERREIRA, boa tarde!
+
+Tudo bem amigo? Esta é uma excelente pergunta. A bem da verdade, acredito que para que possamos ter o melhor entendimento, é preciso que antes falemos brevemente sobre os estados de um objeto face ao contexto de persistência. Os estados seriam:
+
+- Objeto transiente: é aquele objeto criado na memória e que o nosso contexto de persistência (EntityManager) não tem conhecimento, pois o mesmo ainda não existe na base de dados.
+
+- Objeto Persistente: ao contrário do objeto transiente trata-se daquele objeto o qual o contexto de persistência tem conhecimento, ou seja, já existe um registro no banco de dados para o mesmo e o EntityManager já está com o mesmo sob o seu controle (pois buscamos o mesmo no banco, por exemplo).
+
+- Objeto destacado: trata-se de um objeto que estava sendo gerenciado pelo contexto de persistência e que foi desatachado deste contexto quando a session finalizou.
+
+Entendido este ponto, podemos então pensar que sempre que vamos atualizar um objeto no banco, precisamos ter um objeto persistente. E claro, se já temos o mesmo sendo gerenciado pelo EntityManager, ao alterarmos os atributos do mesmo, de fato não há a necessidade de invocar o método save na sequência, pois o hibernate já entende que este objeto sofreu alteração e que portanto precisa ser persistido no banco de dados após estas mudanças.
+
+No caso de um novo registro, o nosso objeto ainda não está sendo gerenciado pelo contexto e portanto trata-se de um objeto transiente. Neste caso, então, temos que sim invocar o método save de forma explicita. Após o hibernate salvá-lo na base, o mesmo passa para o estado persistente. Logo, se após persistir o mesmo, desejasse prover alguma modificação, estando na mesma session, não precisaria buscar o mesmo na base, pois ele já estaria no contexto de persistência.
+
+Espero ter ajudado. Nos deixe saber se restou mais algum ponto em que possamos ajudá-lo no esclarecimento. Um grande abraço e excelentes estudos.
+	
