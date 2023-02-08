@@ -49,7 +49,7 @@ public class CozinhaController {
 		
 		List<CozinhaModel> cozinhaModels = cozinhaModelAssembler.toCollectionModel(cozinhasPage.getContent());
 		
-		   Page<CozinhaModel> cozinhasModelPage = new PageImpl<>(cozinhaModels, pageable, cozinhasPage.getTotalElements());
+		Page<CozinhaModel> cozinhasModelPage = new PageImpl<>(cozinhaModels, pageable, cozinhasPage.getTotalElements());
 
 		return cozinhasModelPage;
 	}
